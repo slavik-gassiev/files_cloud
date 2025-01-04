@@ -1,0 +1,63 @@
+version: '3.9'
+
+services:
+  # PostgreSQL
+  postgres:
+    image: postgres:15
+    container_name: cloudstorage_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: clouduser
+      POSTGRES_PASSWORD: cloudpassword
+      POSTGRES_DB: cloudstorage
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cloud_network
+
+  # Redis для сессий
+  redis:
+    image: redis:6-alpine
+    container_name: cloudstorage_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - cloud_network
+
+  # MinIO для хранения файлов
+  minio:
+    image: minio/minio
+    container_name: cloudstorage_minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"   # Веб-интерфейс и API
+      - "9001:9001"   # Консоль управления
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - cloud_network
+
+  # Adminer для управления PostgreSQL
+  adminer:
+    image: adminer
+    container_name: cloudstorage_adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - cloud_network
+
+networks:
+  cloud_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  minio_data:
