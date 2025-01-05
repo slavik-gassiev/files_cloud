@@ -7,9 +7,9 @@ services:
     container_name: cloudstorage_postgres
     restart: always
     environment:
-      POSTGRES_USER: clouduser
-      POSTGRES_PASSWORD: cloudpassword
-      POSTGRES_DB: cloudstorage
+      POSTGRES_USER: "clouduser"
+      POSTGRES_PASSWORD: "cloudpassword"
+      POSTGRES_DB: "cloudstorage"
     ports:
       - "5432:5432"
     volumes:
