@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface FileRepository extends JpaRepository<File, Long> {
     List<File> findByOwnerId(Long ownerId);
+
+    File findByNameAndPath(String name, String path);
 }
