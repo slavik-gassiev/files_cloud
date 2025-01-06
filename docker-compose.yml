@@ -50,7 +50,7 @@ services:
     container_name: cloudstorage_adminer
     restart: always
     ports:
-      - "8080:8080"
+      - "9090:9090"
     networks:
       - cloud_network
 
