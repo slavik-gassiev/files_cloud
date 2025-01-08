@@ -31,3 +31,5 @@ b
 2src/main/java/com/slava/config/SecurityConfig.java,5\1\51861b98c21899aad9b97ae73f2482578fd5d1d1
 f
 6src/main/java/com/slava/controller/AuthController.java,d\e\defaeae0deb27551517c541333c6e882848e154b
+g
+7src/main/java/com/slava/controller/ErrorController.java,5\2\52f0a0b2f5d6aa54084f10af7ac8befe7aca1429
