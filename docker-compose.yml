@@ -44,15 +44,6 @@ services:
     networks:
       - cloud_network
 
-  # Adminer для управления PostgreSQL
-  adminer:
-    image: adminer
-    container_name: cloudstorage_adminer
-    restart: always
-    ports:
-      - "9090:9090"
-    networks:
-      - cloud_network
 
 networks:
   cloud_network:

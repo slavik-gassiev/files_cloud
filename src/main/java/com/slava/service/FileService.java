@@ -1,4 +1,4 @@
-package service;
+package com.slava.service;
 
 import com.slava.entity.File;
 import com.slava.repository.FileRepository;

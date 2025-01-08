@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">Upload File</h2>
+    <form th:action="@{/files/upload}" th:object="${file}" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">File Name</label>
+            <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Enter file name" required>
+        </div>
+        <div class="mb-3">
+            <label for="path" class="form-label">File Path</label>
+            <input type="text" class="form-control" id="path" th:field="*{path}" placeholder="Enter file path" required>
+        </div>
+        <div class="mb-3">
+            <label for="size" class="form-label">File Size (in KB)</label>
+            <input type="number" class="form-control" id="size" th:field="*{size}" placeholder="Enter file size" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Upload</button>
+    </form>
+</div>
+</body>
+</html>
