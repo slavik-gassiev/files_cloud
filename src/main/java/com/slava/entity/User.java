@@ -3,7 +3,6 @@ package com.slava.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,13 +10,14 @@ import lombok.Setter;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
@@ -26,24 +26,28 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @NotBlank(message = "Username cannot be empty")
-    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     private String username;
 
     @Column(nullable = false)
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
     @Column(nullable = false)
-    @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Email should be valid")
     private String email;
 
-    private String role;
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
+
+    public User() {
+        this.roles = new HashSet<>();
+    }
 }
 
 

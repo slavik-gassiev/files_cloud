@@ -4,30 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .login-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .login-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h2 class="text-center">Register</h2>
+<div class="container">
+    <h1>Register</h1>
     <form th:action="@{/auth/register}" th:object="${user}" method="post">
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Enter username" required>
-            <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" th:field="*{username}" required>
+            <p class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
         </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Enter email" required>
-            <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" th:field="*{password}" required>
+            <p class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
         </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Enter password" required>
-            <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" th:field="*{email}" required>
+            <p class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Register</button>
+        <button type="submit" class="btn">Register</button>
     </form>
-    <p class="text-center mt-3">Already have an account? <a href="/auth/login">Login</a></p>
+    <div class="login-link">
+        <p>Already have an account? <a th:href="@{/auth/login}">Login here</a></p>
+    </div>
 </div>
 </body>
 </html>

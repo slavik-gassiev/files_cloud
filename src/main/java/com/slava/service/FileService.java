@@ -1,46 +1,43 @@
 package com.slava.service;
 
+import com.slava.dto.FileDto;
 import com.slava.entity.File;
 import com.slava.repository.FileRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.slava.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    public FileService(FileRepository fileRepository) {
+    public FileService(FileRepository fileRepository, UserRepository userRepository, ModelMapper modelMapper) {
         this.fileRepository = fileRepository;
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
-    // Сохранение файла
-    public File saveFile(File file) {
-        // Логика валидации
-        if (file.getSize() <= 0) {
-            throw new IllegalArgumentException("File size must be greater than 0");
-        }
-        return fileRepository.save(file);
+    public List<FileDto> getFilesByOwner(Long ownerId) {
+        return fileRepository.findByOwnerId(ownerId)
+                .stream()
+                .map(file -> modelMapper.map(file, FileDto.class))
+                .collect(Collectors.toList());
     }
 
-    // Получение всех файлов владельца
-    public List<File> getFilesByOwner(Long ownerId) {
-        return fileRepository.findByOwnerId(ownerId);
+    public void saveFile(FileDto fileDto) {
+        File file = modelMapper.map(fileDto, File.class);
+        file.setOwner(userRepository.findById(fileDto.getOwnerId())
+                .orElseThrow(() -> new IllegalArgumentException("Owner not found")));
+        fileRepository.save(file);
     }
 
-    // Удаление файла по ID
     public void deleteFile(Long fileId) {
-        File file = fileRepository.findById(fileId)
-                .orElseThrow(() -> new EntityNotFoundException("File not found with ID: " + fileId));
-        fileRepository.delete(file);
-    }
-
-    // Поиск файла по имени и пути
-    public Optional<File> findByNameAndPath(String name, String path) {
-        return Optional.ofNullable(fileRepository.findByNameAndPath(name, path));
+        fileRepository.deleteById(fileId);
     }
 }
-

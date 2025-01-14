@@ -1,7 +1,8 @@
 package com.slava.controller;
 
-import com.slava.entity.File;
-import com.slava.entity.User;
+import com.slava.dto.FileDto;
+import com.slava.service.FileService;
+import com.slava.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -9,26 +10,27 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.slava.service.FileService;
 
 @Controller
 @RequestMapping("/files")
 public class FileController {
 
     private final FileService fileService;
+    private final UserService userService;
 
-    public FileController(FileService fileService) {
+    public FileController(FileService fileService, UserService userService) {
         this.fileService = fileService;
+        this.userService = userService;
     }
 
     @ModelAttribute("file")
-    public File fileModelAttribute() {
-        return new File();
+    public FileDto fileModelAttribute() {
+        return new FileDto();
     }
 
-    @GetMapping
-    public String listFiles(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("files", fileService.getFilesByOwner(user.getId()));
+    @GetMapping("/list")
+    public String listFiles(Model model, @AuthenticationPrincipal Long userId) {
+        model.addAttribute("files", fileService.getFilesByOwner(userId));
         return "files/list"; // Отображение списка файлов
     }
 
@@ -39,16 +41,16 @@ public class FileController {
 
     @PostMapping("/upload")
     public String uploadFile(
-            @Valid @ModelAttribute("file") File file,
+            @Valid @ModelAttribute("file") FileDto fileDto,
             BindingResult bindingResult,
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal Long userId,
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             return "files/upload";
         }
 
-        file.setOwner(user);
-        fileService.saveFile(file);
+        fileDto.setOwnerId(userId); // Устанавливаем текущего пользователя как владельца
+        fileService.saveFile(fileDto); // Сохраняем файл через сервис
 
         redirectAttributes.addFlashAttribute("successMessage", "File uploaded successfully!");
         return "redirect:/files"; // Перенаправление на список файлов
@@ -63,4 +65,3 @@ public class FileController {
         return "redirect:/files";
     }
 }
-
