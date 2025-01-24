@@ -1,3 +1,7 @@
 
-Q
-java:S1068"/Remove this unused "userService" private field.(ÇêŞ¢ıÿÿÿÿ8ÖÉşÏÄ2
+x
+java:S1192+"[Define a constant instead of duplicating this literal "redirect:/files/list?path=" 5 times.(Óî”¡8ÓÕÇÈ2
+j
+java:S1192*"MDefine a constant instead of duplicating this literal "errorMessage" 5 times.(¤”¥¡8ÓÕÇÈ2
+k
+java:S1192:"ODefine a constant instead of duplicating this literal "successMessage" 3 times.(Ç—/8ÓÕÇÈ2

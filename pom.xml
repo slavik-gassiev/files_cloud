@@ -96,6 +96,11 @@
             <artifactId>modelmapper</artifactId>
             <version>3.1.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.17</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -126,6 +131,18 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>10.20.1</version>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/cloudstorage</url>
+                    <user>clouduser</user>
+                    <password>cloudpassword</password>
+                    <schemas>public</schemas>
+                    <locations>filesystem:src/main/resources/db/migration</locations>
                 </configuration>
             </plugin>
         </plugins>

@@ -9,7 +9,19 @@
 <body>
 <div class="container mt-5">
     <h2 class="text-center">My Files</h2>
-    <a href="/files/upload" class="btn btn-success mb-3">Upload File</a>
+    <div class="d-flex justify-content-between">
+        <form th:action="@{/folders/create}" method="post" class="d-flex">
+            <input type="text" class="form-control" name="folderName" placeholder="New folder name" required>
+            <input type="hidden" name="sourcePath" th:value="${currentPath}">
+            <button type="submit" class="btn btn-primary ms-2">Create Folder</button>
+        </form>
+        <form th:action="@{/files/upload}" method="post" enctype="multipart/form-data" class="d-flex">
+            <input type="file" class="form-control" name="file" required>
+            <input type="hidden" name="sourcePath" th:value="${currentPath}">
+            <button type="submit" class="btn btn-success ms-2">Upload File</button>
+        </form>
+    </div>
+    <hr>
     <table class="table table-striped">
         <thead>
         <tr>
@@ -20,14 +32,35 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="file : ${files}">
-            <td th:text="${file.name}"></td>
-            <td th:text="${file.path}"></td>
-            <td th:text="${file.size}"></td>
+        <tr th:each="item : ${files}">
+            <td th:text="${item.name}"></td>
+            <td th:text="${item.path}"></td>
+            <td th:text="${item.size > 0 ? item.size : 'Folder'}"></td>
             <td>
-                <form th:action="@{/files/delete/{id}(id=${file.id})}" method="post">
-                    <button class="btn btn-danger">Delete</button>
-                </form>
+                <div class="d-flex">
+                    <form th:action="@{/files/delete}" method="post" th:if="${item.size > 0}">
+                        <input type="hidden" name="sourcePath" th:value="${currentPath}">
+                        <input type="hidden" name="fileName" th:value="${item.name}">
+                        <button class="btn btn-danger btn-sm me-1">Delete</button>
+                    </form>
+                    <form th:action="@{/folders/delete}" method="post" th:if="${item.size == 0}">
+                        <input type="hidden" name="sourcePath" th:value="${currentPath}">
+                        <input type="hidden" name="folderName" th:value="${item.name}">
+                        <button class="btn btn-danger btn-sm me-1">Delete</button>
+                    </form>
+                    <form th:action="@{/files/rename}" method="post" th:if="${item.size > 0}">
+                        <input type="hidden" name="sourcePath" th:value="${currentPath}">
+                        <input type="hidden" name="fileName" th:value="${item.name}">
+                        <input type="text" class="form-control form-control-sm me-1" name="targetPath" placeholder="New name" required>
+                        <button class="btn btn-warning btn-sm">Rename</button>
+                    </form>
+                    <form th:action="@{/folders/rename}" method="post" th:if="${item.size == 0}">
+                        <input type="hidden" name="sourcePath" th:value="${currentPath}">
+                        <input type="hidden" name="folderName" th:value="${item.name}">
+                        <input type="text" class="form-control form-control-sm me-1" name="targetPath" placeholder="New name" required>
+                        <button class="btn btn-warning btn-sm">Rename</button>
+                    </form>
+                </div>
             </td>
         </tr>
         </tbody>
