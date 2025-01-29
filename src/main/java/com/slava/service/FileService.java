@@ -82,8 +82,9 @@ public class FileService {
         return objects.stream()
                 .filter(object -> {
                     String relativePath = object.substring(folderPath.length());
-                    // Учитываем только элементы на текущем уровне
-                    return !relativePath.isEmpty() && (relativePath.indexOf('/') == relativePath.length() - 1);
+                    // Фильтруем элементы на текущем уровне: либо файлы, либо папки без дополнительных подуровней
+                    return !relativePath.isEmpty() &&
+                            (!relativePath.contains("/") || relativePath.indexOf('/') == relativePath.length() - 1);
                 })
                 .map(object -> {
                     FileFolderDto dto = new FileFolderDto();
@@ -95,8 +96,6 @@ public class FileService {
                 })
                 .toList();
     }
-
-
 
 
     // Загрузка файла
