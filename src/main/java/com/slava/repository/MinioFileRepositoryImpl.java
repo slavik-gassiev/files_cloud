@@ -19,11 +19,11 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
     }
 
     @Override
-    public void uploadFile(String objectName, InputStream fileStream, long size, String contentType) {
+    public void uploadFile(String bucketName, String objectName, InputStream fileStream, long size, String contentType) {
         try {
             minioClient.putObject(
                     PutObjectArgs.builder()
-                            .bucket("user-files")
+                            .bucket(bucketName)
                             .object(objectName)
                             .stream(fileStream, size, -1)
                             .contentType(contentType)
@@ -35,11 +35,11 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
     }
 
     @Override
-    public Optional<InputStream> downloadFile(String objectName) {
+    public Optional<InputStream> downloadFile(String bucketName, String objectName) {
         try {
             InputStream inputStream = minioClient.getObject(
                     GetObjectArgs.builder()
-                            .bucket("user-files")
+                            .bucket(bucketName)
                             .object(objectName)
                             .build()
             );
@@ -50,11 +50,11 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
     }
 
     @Override
-    public void deleteFile(String objectName) {
+    public void deleteFile(String bucketName, String objectName) {
         try {
             minioClient.removeObject(
                     RemoveObjectArgs.builder()
-                            .bucket("user-files")
+                            .bucket(bucketName)
                             .object(objectName)
                             .build()
             );
@@ -64,14 +64,14 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
     }
 
     @Override
-    public void copyFile(String sourceObjectName, String targetObjectName) {
+    public void copyFile(String bucketName, String sourceObjectName, String targetObjectName) {
         try {
             minioClient.copyObject(
                     CopyObjectArgs.builder()
-                            .bucket("user-files")
+                            .bucket(bucketName)
                             .object(targetObjectName)
                             .source(CopySource.builder()
-                                    .bucket("user-files")
+                                    .bucket(bucketName)
                                     .object(sourceObjectName)
                                     .build())
                             .build()
@@ -82,11 +82,11 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
     }
 
     @Override
-    public List<String> listObjects(String prefix) {
+    public List<String> listObjects(String bucketName, String prefix) {
         try {
             Iterable<Result<Item>> results = minioClient.listObjects(
                     ListObjectsArgs.builder()
-                            .bucket("user-files")
+                            .bucket(bucketName)
                             .prefix(prefix)
                             .recursive(true)
                             .build()
@@ -101,5 +101,24 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
             throw new RuntimeException("Error listing objects with prefix: " + prefix, e);
         }
     }
+
+    @Override
+    public boolean bucketExists(String bucketName) {
+        try {
+            return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+        } catch (Exception e) {
+            throw new RuntimeException("Error checking if bucket exists: " + bucketName, e);
+        }
+    }
+
+    @Override
+    public void createBucket(String bucketName) {
+        try {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating bucket: " + bucketName, e);
+        }
+    }
+
 }
 

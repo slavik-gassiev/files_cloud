@@ -1,4 +1,7 @@
 
-g	java:S112h"FDefine and throw a dedicated exception instead of using a generic one.(Ñåúêıÿÿÿÿ8ş§ÎñÈ2
+g	java:S112r"FDefine and throw a dedicated exception instead of using a generic one.(Ñåúêıÿÿÿÿ8ü‹ø”Ê2
+g	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(ğĞ¾èøÿÿÿÿ8ü‹ø”Ê2
+f
+java:S3358O"DExtract this nested ternary operation into an independent statement.(Ç§Úëùÿÿÿÿ8‹÷Œ¾Ê2
 Q
-java:S1068"/Remove this unused "modelMapper" private field.(«ŞËãşÿÿÿÿ8¤¨ÎñÈ2
+java:S1068"/Remove this unused "modelMapper" private field.(«ŞËãşÿÿÿÿ8ˆ‰š’Ê2

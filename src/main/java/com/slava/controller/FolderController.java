@@ -3,6 +3,8 @@ package com.slava.controller;
 import com.slava.dto.FileOperationDto;
 import com.slava.service.FileService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,8 +22,10 @@ public class FolderController {
     }
 
     @ModelAttribute("fileOperationDto")
-    public FileOperationDto fileOperationDto() {
-        return new FileOperationDto();
+    public FileOperationDto fileOperationDto(@AuthenticationPrincipal UserDetails userDetails) {
+        FileOperationDto dto = new FileOperationDto();
+        dto.setBucketName(userDetails.getUsername()); // Устанавливаем bucketName на основе имени пользователя
+        return dto;
     }
 
     @PostMapping("/create")
@@ -35,7 +39,7 @@ public class FolderController {
         }
 
         try {
-            fileService.createFolder(fileOperationDto.getSourcePath() + fileOperationDto.getFolderName());
+            fileService.createFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath() + fileOperationDto.getFolderName());
             redirectAttributes.addFlashAttribute("successMessage", "Folder created successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating folder: " + e.getMessage());
@@ -67,7 +71,7 @@ public class FolderController {
             @ModelAttribute FileOperationDto fileOperationDto,
             RedirectAttributes redirectAttributes) {
         try {
-            fileService.deleteFolder(fileOperationDto.getSourcePath() + fileOperationDto.getFolderName());
+            fileService.deleteFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath() + fileOperationDto.getFolderName());
             redirectAttributes.addFlashAttribute("successMessage", "Folder deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting folder: " + e.getMessage());
