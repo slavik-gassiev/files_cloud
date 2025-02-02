@@ -9,4 +9,5 @@ public class FileOperationDto {
     private String targetPath;
     private String fileName;
     private String folderName;
+    private boolean isFolder;
 }

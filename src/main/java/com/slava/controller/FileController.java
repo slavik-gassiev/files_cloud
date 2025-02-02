@@ -1,5 +1,6 @@
 package com.slava.controller;
 
+import com.slava.dto.FileFolderDto;
 import com.slava.dto.FileOperationDto;
 import com.slava.service.FileService;
 import jakarta.validation.Valid;
@@ -48,11 +49,14 @@ public class FileController {
                 breadcrumbLinks.add(fullPath.toString());
             }
         }
+        List<FileFolderDto> folders = fileService.listOnlyFolders(userName);
+
 
         model.addAttribute("files", fileService.listFolderContents(userName, path));
         model.addAttribute("currentPath", path);
         model.addAttribute("pathSegments", pathSegments);
         model.addAttribute("breadcrumbLinks", breadcrumbLinks);
+        model.addAttribute("folders", folders);
         return "files/list";
     }
 
@@ -85,6 +89,33 @@ public class FileController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error uploading file: " + e.getMessage());
         }
         return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+    }
+
+    @PostMapping("/move")
+    public String moveFile(
+            @ModelAttribute @Valid FileOperationDto fileOperationDto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации: " + bindingResult.getAllErrors());
+            return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+        }
+
+        try {
+            if (fileOperationDto.isFolder()) {
+                // Если объект является папкой, вызываем метод для перемещения папки
+                fileService.moveFolder(fileOperationDto);
+                redirectAttributes.addFlashAttribute("successMessage", "Папка успешно перемещена");
+            } else {
+                // Если объект является файлом, вызываем метод для перемещения файла
+                fileService.moveFile(fileOperationDto);
+                redirectAttributes.addFlashAttribute("successMessage", "Файл успешно перемещён");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при перемещении: " + e.getMessage());
+        }
+        return "redirect:/files/list?path=" + fileOperationDto.getTargetPath();
     }
 
 

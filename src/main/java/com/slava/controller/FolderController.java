@@ -47,6 +47,26 @@ public class FolderController {
         return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
     }
 
+    @PostMapping("/folders/move")
+    public String moveFolder(
+            @ModelAttribute @Valid FileOperationDto fileOperationDto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации: " + bindingResult.getAllErrors());
+            return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+        }
+
+        try {
+            fileService.moveFolder(fileOperationDto);
+            redirectAttributes.addFlashAttribute("successMessage", "Папка успешно перемещена");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при перемещении папки: " + e.getMessage());
+        }
+        return "redirect:/files/list?path=" + fileOperationDto.getTargetPath();
+    }
+
     @PostMapping("/rename")
     public String renameFolder(
             @ModelAttribute @Valid FileOperationDto fileOperationDto,
