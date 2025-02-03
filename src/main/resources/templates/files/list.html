@@ -57,6 +57,7 @@
             <td th:text="${item.path}"></td>
             <td th:text="${item.size > 0 ? item.size + ' bytes' : 'Folder'}"></td>
             <td>
+                <!-- Используем одну кнопку для перемещения -->
                 <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#moveModal"
                         th:data-file-name="${item.name}" th:data-file-path="${item.path}" th:data-is-folder="${item.isFolder}">
                     Move
@@ -67,25 +68,23 @@
     </table>
 </div>
 
-<!-- Модальное окно для перемещения файлов -->
+<!-- Модальное окно для перемещения файлов и папок -->
 <div class="modal fade" id="moveModal" tabindex="-1" aria-labelledby="moveModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="moveModalLabel">Move File</h5>
+                <h5 class="modal-title" id="moveModalLabel">Move</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="moveForm" th:action="@{/files/move}" method="post">
                     <input type="hidden" id="sourcePath" name="sourcePath">
                     <input type="hidden" id="fileName" name="fileName">
-                    <!-- Добавляем скрытое поле для передачи информации о типе объекта -->
                     <input type="hidden" id="isFolder" name="isFolder">
 
                     <label for="targetPath" class="form-label">Select Destination Folder:</label>
                     <select id="targetPath" name="targetPath" class="form-select" required>
                         <option value="" disabled selected>Choose folder</option>
-                        <!-- Динамически выводим список папок -->
                         <option th:each="folder : ${folders}" th:value="${folder.path}" th:text="${folder.name}"></option>
                     </select>
 
@@ -99,8 +98,8 @@
     </div>
 </div>
 
+
 <script>
-    // Открытие модального окна с данными о файле
     var moveModalElement = document.getElementById('moveModal');
     moveModalElement.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget; // Кнопка, вызвавшая модальное окно
@@ -112,6 +111,14 @@
         document.getElementById('fileName').value = fileName;
         document.getElementById('sourcePath').value = filePath;
         document.getElementById('isFolder').value = isFolder;  // Передача информации о типе объекта
+
+        // Устанавливаем правильный маршрут в зависимости от того, файл это или папка
+        var form = document.getElementById('moveForm');
+        if (isFolder) {
+            form.action = '/folders/move';  // Папки направляются на /folders/move
+        } else {
+            form.action = '/files/move';    // Файлы направляются на /files/move
+        }
     });
 </script>
 

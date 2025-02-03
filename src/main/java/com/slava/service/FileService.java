@@ -31,16 +31,22 @@ public class FileService {
     }
 
     public void moveFolder(FileOperationDto fileOperationDto) {
-        String folderName = fileOperationDto.getSourcePath().substring(fileOperationDto.getSourcePath().lastIndexOf("/") + 1);
-        String targetPath = fileOperationDto.getTargetPath();
+        String folderName = fileOperationDto.getSourcePath();
+        if (folderName.endsWith("/")) {
+            folderName = folderName.substring(0, folderName.length() - 1); // Убираем последний слэш
+        }
+        folderName = folderName.substring(folderName.lastIndexOf("/") + 1); // Извлекаем только имя папки
 
+        String targetPath = fileOperationDto.getTargetPath();
         if (!targetPath.endsWith("/")) {
             targetPath += "/";
         }
 
         String targetPathWithFolderName = targetPath + folderName;
+
         fileRepository.moveFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), targetPathWithFolderName);
     }
+
 
 
     public void moveFile(FileOperationDto fileOperationDto) {

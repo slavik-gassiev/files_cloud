@@ -47,7 +47,7 @@ public class FolderController {
         return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
     }
 
-    @PostMapping("/folders/move")
+    @PostMapping("/move")
     public String moveFolder(
             @ModelAttribute @Valid FileOperationDto fileOperationDto,
             BindingResult bindingResult,

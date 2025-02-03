@@ -102,19 +102,8 @@ public class FileController {
             return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
         }
 
-        try {
-            if (fileOperationDto.isFolder()) {
-                // Если объект является папкой, вызываем метод для перемещения папки
-                fileService.moveFolder(fileOperationDto);
-                redirectAttributes.addFlashAttribute("successMessage", "Папка успешно перемещена");
-            } else {
-                // Если объект является файлом, вызываем метод для перемещения файла
-                fileService.moveFile(fileOperationDto);
-                redirectAttributes.addFlashAttribute("successMessage", "Файл успешно перемещён");
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при перемещении: " + e.getMessage());
-        }
+        fileService.moveFile(fileOperationDto);
+        redirectAttributes.addFlashAttribute("successMessage", "Файл успешно перемещён");
         return "redirect:/files/list?path=" + fileOperationDto.getTargetPath();
     }
 
