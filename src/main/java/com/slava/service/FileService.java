@@ -116,11 +116,11 @@ public class FileService {
         }
     }
 
-    public void deleteFile(String bucketName, String objectName) {
-        fileRepository.deleteFile(bucketName, objectName);
+    public void deleteFile(FileOperationDto fileOperationDto) {
+        fileRepository.deleteFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath());
     }
 
     public void renameFile(FileOperationDto fileOperationDto) {
-        moveFile(fileOperationDto);
+        fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), fileOperationDto.getTargetPath());
     }
 }

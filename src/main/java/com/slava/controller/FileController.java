@@ -132,7 +132,7 @@ public class FileController {
             @ModelAttribute FileOperationDto fileOperationDto,
             RedirectAttributes redirectAttributes) {
         try {
-            fileService.deleteFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath() + fileOperationDto.getFileName());
+            fileService.deleteFile(fileOperationDto);
             redirectAttributes.addFlashAttribute("successMessage", "File deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting file: " + e.getMessage());

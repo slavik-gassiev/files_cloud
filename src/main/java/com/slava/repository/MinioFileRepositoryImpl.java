@@ -44,11 +44,11 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
     }
 
     @Override
-    public void deleteFile(String bucketName, String objectName) {
+    public void deleteFile(String bucketName, String filePath) {
         try {
-            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(filePath).build());
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting file: " + objectName, e);
+            throw new RuntimeException("Error deleting file: " + filePath, e);
         }
     }
 
