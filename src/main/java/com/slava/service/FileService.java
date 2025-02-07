@@ -6,8 +6,11 @@ import com.slava.repository.CustomFileRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class FileService {
@@ -27,32 +30,63 @@ public class FileService {
     }
 
     public void renameFolder(FileOperationDto fileOperationDto) {
-        moveFolder(fileOperationDto);
+        String newTargetPath = buildNewPath(fileOperationDto.getSourcePath(), fileOperationDto.getTargetPath());
+        fileRepository.moveFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
     public void moveFolder(FileOperationDto fileOperationDto) {
-        String folderName = fileOperationDto.getSourcePath();
-        if (folderName.endsWith("/")) {
-            folderName = folderName.substring(0, folderName.length() - 1); // Убираем последний слэш
-        }
-        folderName = folderName.substring(folderName.lastIndexOf("/") + 1); // Извлекаем только имя папки
+        String folderName = extractFolderName(fileOperationDto.getSourcePath());
+        String newTargetPath = normalizePath(fileOperationDto.getTargetPath()) + folderName + "/";
 
-        String targetPath = fileOperationDto.getTargetPath();
-        if (!targetPath.endsWith("/")) {
-            targetPath += "/";
-        }
-
-        String targetPathWithFolderName = targetPath + folderName;
-
-        fileRepository.moveFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), targetPathWithFolderName);
+        fileRepository.moveFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
-
-
     public void moveFile(FileOperationDto fileOperationDto) {
-        String fileName = fileOperationDto.getSourcePath().substring(fileOperationDto.getSourcePath().lastIndexOf("/") + 1);
-        String targetPathWithFileName = fileOperationDto.getTargetPath() + fileName;
-        fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), targetPathWithFileName);
+        String newTargetPath = fileOperationDto.getTargetPath();
+        if (!newTargetPath.endsWith("/")) {
+            newTargetPath += "/";
+        }
+        newTargetPath += extractFileName(fileOperationDto.getSourcePath());
+        fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
+    }
+
+    public void renameFile(FileOperationDto fileOperationDto) {
+        String newTargetPath = buildNewPath(fileOperationDto.getSourcePath(), fileOperationDto.getTargetPath());
+        fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
+    }
+
+    public void deleteFile(FileOperationDto fileOperationDto) {
+        fileRepository.deleteFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath());
+    }
+
+    public byte[] downloadFolderAsZip(String bucketName, String folderPath) {
+        List<String> files = fileRepository.listObjects(bucketName, folderPath);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ZipOutputStream zos = new ZipOutputStream(baos)) {
+            for (String filePath : files) {
+                byte[] fileData = downloadFile(bucketName, filePath);
+                ZipEntry entry = new ZipEntry(filePath.substring(folderPath.length()));
+                zos.putNextEntry(entry);
+                zos.write(fileData);
+                zos.closeEntry();
+            }
+            zos.finish();
+            return baos.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("Error while creating ZIP archive", e);
+        }
+    }
+
+    public byte[] downloadFile(String bucketName, String objectName) {
+        return fileRepository.downloadFile(bucketName, objectName)
+                .map(inputStream -> {
+                    try {
+                        return inputStream.readAllBytes();
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error reading file content", e);
+                    }
+                })
+                .orElseThrow(() -> new IllegalArgumentException("File not found"));
     }
 
     public List<FileFolderDto> listFolderContents(String bucketName, String path) {
@@ -62,7 +96,6 @@ public class FileService {
         return objects.stream()
                 .filter(object -> {
                     String relativePath = object.substring(folderPath.length());
-                    // Фильтруем элементы на текущем уровне: либо файлы, либо папки без дополнительных подуровней
                     return !relativePath.isEmpty() &&
                             (!relativePath.contains("/") || relativePath.indexOf('/') == relativePath.length() - 1);
                 })
@@ -81,30 +114,17 @@ public class FileService {
         fileRepository.uploadFile(bucketName, objectName, new ByteArrayInputStream(content), content.length, contentType);
     }
 
-    public byte[] downloadFile(String bucketName, String objectName) {
-        return fileRepository.downloadFile(bucketName, objectName)
-                .map(inputStream -> {
-                    try {
-                        return inputStream.readAllBytes();
-                    } catch (IOException e) {
-                        throw new RuntimeException("Error reading file content", e);
-                    }
-                })
-                .orElseThrow(() -> new IllegalArgumentException("File not found"));
-    }
-
     public List<FileFolderDto> listOnlyFolders(String bucketName) {
         List<String> objects = fileRepository.listObjects(bucketName, "");
 
-        // Фильтруем только папки
         return objects.stream()
-                .filter(object -> object.endsWith("/")) // Сохраняем только пути, заканчивающиеся на "/"
+                .filter(object -> object.endsWith("/"))
                 .map(object -> {
                     FileFolderDto dto = new FileFolderDto();
-                    dto.setName(object); // Имя папки без полного пути
+                    dto.setName(object);
                     dto.setPath(object);
                     dto.setFolder(true);
-                    dto.setSize(0); // Размер для папок отсутствует
+                    dto.setSize(0);
                     return dto;
                 })
                 .toList();
@@ -116,11 +136,32 @@ public class FileService {
         }
     }
 
-    public void deleteFile(FileOperationDto fileOperationDto) {
-        fileRepository.deleteFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath());
+    private String buildNewPath(String sourcePath, String targetPath) {
+        if (!sourcePath.endsWith("/")) {
+            sourcePath += "/";
+        }
+        if (!targetPath.endsWith("/")) {
+            targetPath += "/";
+        }
+        String folderName = extractFileName(sourcePath);
+        return targetPath + folderName + "/";
     }
 
-    public void renameFile(FileOperationDto fileOperationDto) {
-        fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), fileOperationDto.getTargetPath());
+    private String extractFileName(String path) {
+        return path.substring(path.lastIndexOf("/") + 1);
+    }
+
+    private String extractFolderName(String sourcePath) {
+        if (sourcePath.endsWith("/")) {
+            sourcePath = sourcePath.substring(0, sourcePath.length() - 1);
+        }
+        return sourcePath.substring(sourcePath.lastIndexOf("/") + 1);
+    }
+
+    private String normalizePath(String path) {
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+        return path.replaceAll("//+", "/"); // Убираем двойные слэши
     }
 }

@@ -4,6 +4,9 @@ import com.slava.dto.FileFolderDto;
 import com.slava.dto.FileOperationDto;
 import com.slava.service.FileService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -138,5 +141,25 @@ public class FileController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting file: " + e.getMessage());
         }
         return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("path") String path,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            String bucketName = userDetails.getUsername();
+            byte[] fileData = fileService.downloadFile(bucketName, path);
+            String fileName = path.substring(path.lastIndexOf("/") + 1);
+
+            ByteArrayResource resource = new ByteArrayResource(fileData);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentLength(fileData.length)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while downloading file", e);
+        }
     }
 }

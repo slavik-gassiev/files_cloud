@@ -1,8 +1,12 @@
 package com.slava.controller;
 
+import com.slava.dto.FileFolderDto;
 import com.slava.dto.FileOperationDto;
 import com.slava.service.FileService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -10,6 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Controller
 @RequestMapping("/folders")
@@ -91,11 +101,39 @@ public class FolderController {
             @ModelAttribute FileOperationDto fileOperationDto,
             RedirectAttributes redirectAttributes) {
         try {
-            fileService.deleteFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath() + fileOperationDto.getFolderName());
+            fileService.deleteFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath());
             redirectAttributes.addFlashAttribute("successMessage", "Folder deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting folder: " + e.getMessage());
         }
         return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFolder(@RequestParam("path") String path,
+                                                   @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            String bucketName = userDetails.getUsername();
+
+            byte[] zipData = fileService.downloadFolderAsZip(bucketName, path);
+
+            String folderName = path.substring(path.lastIndexOf("/") + 1);
+            if (folderName.isEmpty()) {
+                folderName = "download"; // Дефолтное имя, если папка не задана
+            }
+            folderName = folderName.endsWith("/") ? folderName.substring(0, folderName.length() - 1) : folderName;
+
+            String zipFileName = folderName + ".zip";
+
+            ByteArrayResource resource = new ByteArrayResource(zipData);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"")
+                    .contentLength(zipData.length)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while downloading folder", e);
+        }
     }
 }

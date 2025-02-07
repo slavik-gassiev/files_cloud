@@ -115,3 +115,13 @@ h
 8src/main/java/com/slava/controller/FolderController.java,e\b\ebbb79475b6202a31353d6553d998abdb28f59ae
 j
 :src/main/java/com/slava/listener/LoginSuccessListener.java,5\f\5f471c9ee7b073e4d8137dee79f7a0f3057474ac
+`
+0src/main/java/com/slava/dto/CreateFolderDto.java,4\d\4dc8e2ae1dfc24a6b959f2afbff454677a82093b
+^
+.src/main/java/com/slava/dto/DeleteFileDto.java,a\5\a53cae1f342f4ac75e32342e86e56cd1ee4fb5cb
+\
+,src/main/java/com/slava/dto/MoveFileDto.java,7\6\764952fe2042ca50602cddf45b040309d4546d39
+^
+.src/main/java/com/slava/dto/RenameFileDto.java,3\1\313e665b7e5fe9ffe0d567b63d266c3968dae7d1
+^
+.src/main/java/com/slava/dto/UploadFileDto.java,c\9\c9a51be1194936eb713e676e8a77de01f01cd215

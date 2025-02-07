@@ -1,7 +1,8 @@
 
+h	java:S112¢"FDefine and throw a dedicated exception instead of using a generic one.(çœ¸Ÿúÿÿÿÿ8ºø½ÛÍ2
 x
-java:S1192G"[Define a constant instead of duplicating this literal "redirect:/files/list?path=" 7 times.(Óî”¡8ŒıÜÌ2
+java:S1192J"[Define a constant instead of duplicating this literal "redirect:/files/list?path=" 7 times.(Óî”¡8ŒıÜÌ2
 j
-java:S1192F"MDefine a constant instead of duplicating this literal "errorMessage" 6 times.(¤”¥¡8ıÜÌ2
+java:S1192I"MDefine a constant instead of duplicating this literal "errorMessage" 6 times.(¤”¥¡8ıÜÌ2
 k
-java:S1192W"ODefine a constant instead of duplicating this literal "successMessage" 4 times.(Ç—/8ıÜÌ2
+java:S1192Z"ODefine a constant instead of duplicating this literal "successMessage" 4 times.(Ç—/8ıÜÌ2
