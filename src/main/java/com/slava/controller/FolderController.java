@@ -117,11 +117,7 @@ public class FolderController {
 
             byte[] zipData = fileService.downloadFolderAsZip(bucketName, path);
 
-            String folderName = path.substring(path.lastIndexOf("/") + 1);
-            if (folderName.isEmpty()) {
-                folderName = "download"; // Дефолтное имя, если папка не задана
-            }
-            folderName = folderName.endsWith("/") ? folderName.substring(0, folderName.length() - 1) : folderName;
+            String folderName = extractFolderName(path);
 
             String zipFileName = folderName + ".zip";
 
@@ -135,5 +131,17 @@ public class FolderController {
         } catch (Exception e) {
             throw new RuntimeException("Error while downloading folder", e);
         }
+    }
+
+    private String extractFolderName(String path) {
+        if (path == null || path.isEmpty()) {
+            return "Root"; // Если путь пустой, используем дефолтное имя
+        }
+        // Убираем конечный слеш, если он есть
+        path = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+
+        // Извлекаем имя папки из пути
+        int lastSlashIndex = path.lastIndexOf("/");
+        return (lastSlashIndex == -1) ? path : path.substring(lastSlashIndex + 1);
     }
 }
