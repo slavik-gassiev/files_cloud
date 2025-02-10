@@ -54,7 +54,7 @@ public class FileController {
         }
         List<FileFolderDto> folders = fileService.listOnlyFolders(userName);
 
-
+        model.addAttribute("userName", userName);
         model.addAttribute("files", fileService.listFolderContents(userName, path));
         model.addAttribute("currentPath", path);
         model.addAttribute("pathSegments", pathSegments);

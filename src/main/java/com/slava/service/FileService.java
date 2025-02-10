@@ -30,7 +30,27 @@ public class FileService {
     }
 
     public void renameFolder(FileOperationDto fileOperationDto) {
-        String newTargetPath = buildNewPath(fileOperationDto.getSourcePath(), fileOperationDto.getTargetPath());
+        String sourcePath = fileOperationDto.getSourcePath();
+        if (sourcePath == null || sourcePath.isEmpty() || !sourcePath.contains("/")) {
+            throw new IllegalArgumentException("Invalid sourcePath provided.");
+        }
+
+        if (sourcePath.endsWith("/")) {
+            sourcePath = sourcePath.substring(0, sourcePath.length() - 1);
+        }
+
+        String parentPath = sourcePath.substring(0, sourcePath.lastIndexOf('/'));
+
+        String folderName = fileOperationDto.getFolderName();
+        if (folderName == null || folderName.isEmpty()) {
+            throw new IllegalArgumentException("Folder name cannot be null or empty.");
+        }
+
+        if (folderName.endsWith("/")) {
+            folderName = folderName.substring(0, folderName.length() - 1);
+        }
+
+        String newTargetPath = parentPath + "/" + folderName + "/";
         fileRepository.moveFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
@@ -51,7 +71,8 @@ public class FileService {
     }
 
     public void renameFile(FileOperationDto fileOperationDto) {
-        String newTargetPath = buildNewPath(fileOperationDto.getSourcePath(), fileOperationDto.getTargetPath());
+        String parentPath = fileOperationDto.getSourcePath().substring(0, fileOperationDto.getSourcePath().lastIndexOf('/'));
+        String newTargetPath = parentPath + "/" + fileOperationDto.getFileName();
         fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
@@ -134,17 +155,6 @@ public class FileService {
         if (!fileRepository.bucketExists(bucketName)) {
             fileRepository.createBucket(bucketName);
         }
-    }
-
-    private String buildNewPath(String sourcePath, String targetPath) {
-        if (!sourcePath.endsWith("/")) {
-            sourcePath += "/";
-        }
-        if (!targetPath.endsWith("/")) {
-            targetPath += "/";
-        }
-        String folderName = extractFileName(sourcePath);
-        return targetPath + folderName + "/";
     }
 
     private String extractFileName(String path) {

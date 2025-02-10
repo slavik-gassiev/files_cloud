@@ -37,30 +37,6 @@ public class MinioConfig {
                                 .build()
                 );
             }
-
-            // Создаем "корневую папку" (папка внутри бакета)
-            String rootFolder = "root/";
-
-            // Проверяем, есть ли уже объект с этим именем
-            Iterable<Result<Item>> objects = minioClient.listObjects(
-                    ListObjectsArgs.builder()
-                            .bucket(bucketName)
-                            .prefix(rootFolder)
-                            .build()
-            );
-
-            if (!objects.iterator().hasNext()) {
-                // Создаем "пустой" объект, имитирующий папку
-                minioClient.putObject(
-                        PutObjectArgs.builder()
-                                .bucket(bucketName)
-                                .object(rootFolder) // Имя "папки"
-                                .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
-                                .contentType("application/octet-stream")
-                                .build()
-                );
-            }
-
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при инициализации MinIO для пользователя: " + username, e);
         }

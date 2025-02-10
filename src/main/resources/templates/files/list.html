@@ -13,7 +13,7 @@
     <nav aria-label="breadcrumb" class="my-3">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a th:href="@{/files/list(path='')}" th:text="'Root'"></a>
+                <a th:href="@{/files/list(path='')}" th:text="${userName}"></a>
             </li>
             <li th:each="segment, iterStat : ${pathSegments}"
                 th:classappend="${iterStat.last ? 'breadcrumb-item active' : 'breadcrumb-item'}">
@@ -125,13 +125,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="renameForm" th:action="@{/files/rename}" method="post">
+                <form id="renameForm" method="post">
                     <input type="hidden" id="renameSourcePath" name="sourcePath">
-                    <input type="hidden" id="renameTargetPath" name="targetPath">
+                    <input type="hidden" id="renameFileName" name="fileName">
+                    <input type="hidden" id="renameFolderName" name="folderName">
                     <input type="hidden" id="renameIsFolder" name="isFolder">
 
                     <label for="renameNewName" class="form-label">New Name:</label>
-                    <input type="text" id="renameNewName" name="newName" class="form-control" placeholder="Enter new name" required>
+                    <input type="text" id="renameNewName" class="form-control" placeholder="Enter new name" required>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Rename</button>
@@ -192,22 +193,42 @@
             const button = event.relatedTarget;
             const filePath = button.getAttribute('data-file-path') || '';
             let fileName = button.getAttribute('data-file-name') || '';
+            const isFolder = button.getAttribute('data-is-folder') === 'true';
 
-            // Убираем завершающий слэш, если это папка
-            if (fileName.endsWith('/')) {
+            // Удаляем завершающий слэш, если это папка
+            if (isFolder && fileName.endsWith('/')) {
                 fileName = fileName.slice(0, -1);
             }
 
-            // Записываем значения в скрытые поля и текстовое поле
+            // Устанавливаем значения для формы
             document.getElementById('renameSourcePath').value = filePath;
-            document.getElementById('renameNewName').value = fileName; // Отображаем старое имя файла
-            document.getElementById('renameTargetPath').value = ''; // Очищаем значение, если оно раньше задавалось
+            document.getElementById('renameIsFolder').value = isFolder;
 
-            // Пересчитываем путь при изменении имени
-            document.getElementById('renameNewName').addEventListener('input', (e) => {
-                const parentPath = filePath.substring(0, filePath.lastIndexOf("/"));
-                document.getElementById('renameTargetPath').value = `${parentPath}/${e.target.value}`;
+            if (isFolder) {
+                document.getElementById('renameFolderName').value = fileName;
+                document.getElementById('renameFileName').value = ''; // Очищаем fileName
+            } else {
+                document.getElementById('renameFileName').value = fileName;
+                document.getElementById('renameFolderName').value = ''; // Очищаем folderName
+            }
+
+            // Устанавливаем текущее имя в поле ввода
+            const newNameInput = document.getElementById('renameNewName');
+            newNameInput.value = fileName;
+
+            // Обновляем соответствующее имя при изменении поля ввода
+            newNameInput.addEventListener('input', (e) => {
+                const newValue = e.target.value.trim();
+                if (isFolder) {
+                    document.getElementById('renameFolderName').value = newValue;
+                } else {
+                    document.getElementById('renameFileName').value = newValue;
+                }
             });
+
+            // Устанавливаем правильный URL для формы
+            const form = document.getElementById('renameForm');
+            form.action = isFolder ? '/folders/rename' : '/files/rename';
         });
 
         // Настройка для удаления
