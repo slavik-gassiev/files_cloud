@@ -12,8 +12,5 @@ public class DeleteFileDto {
 
     @NotNull
     private String sourcePath;
-
-    @NotNull
-    private String fileName;
 }
 

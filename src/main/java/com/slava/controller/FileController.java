@@ -142,15 +142,17 @@ public class FileController {
 
     @PostMapping("/delete")
     public String deleteFile(
-            @ModelAttribute FileOperationDto fileOperationDto,
-            RedirectAttributes redirectAttributes) {
+            @ModelAttribute DeleteFileDto deleteFileDto,
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            fileService.deleteFile(fileOperationDto);
+            deleteFileDto.setBucketName(userDetails.getUsername());
+            fileService.deleteFile(deleteFileDto);
             redirectAttributes.addFlashAttribute("successMessage", "File deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting file: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+        return "redirect:/files/list?path=" + deleteFileDto.getSourcePath();
     }
 
     @GetMapping("/download")

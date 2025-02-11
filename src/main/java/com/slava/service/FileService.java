@@ -24,8 +24,8 @@ public class FileService {
         fileRepository.createFolder(bucketName, path);
     }
 
-    public void deleteFolder(String bucketName, String path) {
-        fileRepository.deleteFolder(bucketName, path);
+    public void deleteFolder(DeleteFileDto deleteFileDto) {
+        fileRepository.deleteFolder(deleteFileDto.getBucketName(), deleteFileDto.getSourcePath());
     }
 
     public void renameFolder(RenameFileDto fileOperationDto) {
@@ -48,8 +48,8 @@ public class FileService {
         fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
-    public void deleteFile(FileOperationDto fileOperationDto) {
-        fileRepository.deleteFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath());
+    public void deleteFile(DeleteFileDto deleteFileDto) {
+        fileRepository.deleteFile(deleteFileDto.getBucketName(), deleteFileDto.getSourcePath());
     }
 
     public byte[] downloadFolderAsZip(String bucketName, String folderPath) {

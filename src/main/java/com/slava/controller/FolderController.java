@@ -1,9 +1,6 @@
 package com.slava.controller;
 
-import com.slava.dto.FileFolderDto;
-import com.slava.dto.FileOperationDto;
-import com.slava.dto.MoveFileDto;
-import com.slava.dto.RenameFileDto;
+import com.slava.dto.*;
 import com.slava.service.FileService;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
@@ -19,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -104,15 +102,17 @@ public class FolderController {
 
     @PostMapping("/delete")
     public String deleteFolder(
-            @ModelAttribute FileOperationDto fileOperationDto,
-            RedirectAttributes redirectAttributes) {
+            @ModelAttribute DeleteFileDto deleteFileDto,
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            fileService.deleteFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath());
+            deleteFileDto.setBucketName(userDetails.getUsername());
+            fileService.deleteFolder(deleteFileDto);
             redirectAttributes.addFlashAttribute("successMessage", "Folder deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting folder: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+        return "redirect:/files/list?path=" + deleteFileDto.getSourcePath();
     }
 
     @GetMapping("/download")
