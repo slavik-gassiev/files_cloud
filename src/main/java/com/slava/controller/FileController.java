@@ -2,6 +2,7 @@ package com.slava.controller;
 
 import com.slava.dto.*;
 import com.slava.service.FileService;
+import com.slava.service.FolderService;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -24,9 +25,11 @@ import java.util.List;
 public class FileController {
 
     private final FileService fileService;
+    private final FolderService folderService;
 
-    public FileController(FileService fileService) {
+    public FileController(FileService fileService, FolderService folderService) {
         this.fileService = fileService;
+        this.folderService = folderService;
     }
 
     @ModelAttribute("fileOperationDto")
@@ -52,7 +55,7 @@ public class FileController {
                 breadcrumbLinks.add(fullPath.toString());
             }
         }
-        List<FileFolderDto> folders = fileService.listOnlyFolders(userName);
+        List<FileFolderDto> folders = folderService.listOnlyFolders(userName);
 
         model.addAttribute("userName", userName);
         model.addAttribute("files", fileService.listFolderContents(userName, path));
@@ -67,7 +70,6 @@ public class FileController {
     public String uploadFile(
             @RequestParam("file") MultipartFile file,
             @ModelAttribute UploadFileDto uploadFileDto,
-            BindingResult bindingResult,
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal UserDetails userDetails) {
 

@@ -1,7 +1,7 @@
 package com.slava.controller;
 
 import com.slava.dto.*;
-import com.slava.service.FileService;
+import com.slava.service.FolderService;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -9,26 +9,18 @@ import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Controller
 @RequestMapping("/folders")
 public class FolderController {
 
-    private final FileService fileService;
+    private final FolderService folderService;
 
-    public FolderController(FileService fileService) {
-        this.fileService = fileService;
+    public FolderController(FolderService folderService) {
+        this.folderService = folderService;
     }
 
     @ModelAttribute("fileOperationDto")
@@ -51,7 +43,7 @@ public class FolderController {
 
         try {
             createFolderDto.setBucketName(userDetails.getUsername());
-            fileService.createFolder(createFolderDto);
+            folderService.createFolder(createFolderDto);
             redirectAttributes.addFlashAttribute("successMessage", "Folder created successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating folder: " + e.getMessage());
@@ -73,7 +65,7 @@ public class FolderController {
 
         try {
             moveFileDto.setBucketName(userDetails.getUsername());
-            fileService.moveFolder(moveFileDto);
+            folderService.moveFolder(moveFileDto);
             redirectAttributes.addFlashAttribute("successMessage", "Папка успешно перемещена");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при перемещении папки: " + e.getMessage());
@@ -94,7 +86,7 @@ public class FolderController {
 
         try {
             renameFileDto.setBucketName(userDetails.getUsername());
-            fileService.renameFolder(renameFileDto);
+            folderService.renameFolder(renameFileDto);
             redirectAttributes.addFlashAttribute("successMessage", "Folder renamed successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error renaming folder: " + e.getMessage());
@@ -109,7 +101,7 @@ public class FolderController {
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             deleteFileDto.setBucketName(userDetails.getUsername());
-            fileService.deleteFolder(deleteFileDto);
+            folderService.deleteFolder(deleteFileDto);
             redirectAttributes.addFlashAttribute("successMessage", "Folder deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting folder: " + e.getMessage());
@@ -123,7 +115,7 @@ public class FolderController {
         try {
             String bucketName = userDetails.getUsername();
 
-            byte[] zipData = fileService.downloadFolderAsZip(bucketName, path);
+            byte[] zipData = folderService.downloadFolderAsZip(bucketName, path);
 
             String folderName = extractFolderName(path);
 

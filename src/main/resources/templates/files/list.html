@@ -23,6 +23,12 @@
                 <span th:if="${iterStat.last}" th:text="${segment}"></span>
             </li>
         </ol>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-center">My Files</h2>
+            <form th:action="@{/auth/logout}" method="post">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
     </nav>
 
     <div class="d-flex justify-content-between">

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        /* Стили остаются как раньше */
+        /* Основные стили */
         body {
             font-family: Arial, sans-serif;
             background-color: #f3f4f6;
@@ -14,59 +14,87 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            padding: 20px;
         }
+
+        /* Карточка формы */
         .container {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
         }
+
+        /* Заголовок */
         h1 {
             text-align: center;
             color: #333333;
+            margin-bottom: 20px;
         }
+
+        /* Форм-группы */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+
+        /* Лейблы */
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #555555;
+            margin-bottom: 6px;
+            color: #444444;
+            font-weight: bold;
         }
+
+        /* Поля ввода */
         .form-group input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #cccccc;
-            border-radius: 4px;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
         }
+
         .form-group input:focus {
             outline: none;
             border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
         }
+
+        /* Кнопка */
         .btn {
             display: block;
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        /* Ссылка на регистрацию */
         .register-link {
             margin-top: 15px;
             text-align: center;
+            font-size: 14px;
         }
+
         .register-link a {
             color: #007bff;
             text-decoration: none;
+            font-weight: bold;
         }
+
         .register-link a:hover {
             text-decoration: underline;
         }
