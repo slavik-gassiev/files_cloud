@@ -2,6 +2,7 @@ package com.slava.controller;
 
 import com.slava.dto.FileFolderDto;
 import com.slava.dto.FileOperationDto;
+import com.slava.dto.RenameFileDto;
 import com.slava.service.FileService;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
@@ -110,24 +111,24 @@ public class FileController {
         return "redirect:/files/list?path=" + fileOperationDto.getTargetPath();
     }
 
-
     @PostMapping("/rename")
     public String renameFile(
-            @ModelAttribute @Valid FileOperationDto fileOperationDto,
+            @ModelAttribute @Valid RenameFileDto renameFileDto,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal UserDetails userDetails) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Validation failed: " + bindingResult.getAllErrors());
-            return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+            return "redirect:/files/list?path=" + renameFileDto.getSourcePath();
         }
-
+        renameFileDto.setBucketName(userDetails.getUsername());
         try {
-            fileService.renameFile(fileOperationDto);
+            fileService.renameFile(renameFileDto);
             redirectAttributes.addFlashAttribute("successMessage", "File renamed successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error renaming file: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+        return "redirect:/files/list?path=" + renameFileDto.getSourcePath();
     }
 
     @PostMapping("/delete")

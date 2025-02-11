@@ -19,5 +19,7 @@ public class RenameFileDto {
 
     @NotNull
     private String newFileName;
+
+    private boolean isFolder = false;
 }
 

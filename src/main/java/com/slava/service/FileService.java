@@ -2,6 +2,7 @@ package com.slava.service;
 
 import com.slava.dto.FileFolderDto;
 import com.slava.dto.FileOperationDto;
+import com.slava.dto.RenameFileDto;
 import com.slava.repository.CustomFileRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,28 +30,8 @@ public class FileService {
         fileRepository.deleteFolder(bucketName, path);
     }
 
-    public void renameFolder(FileOperationDto fileOperationDto) {
-        String sourcePath = fileOperationDto.getSourcePath();
-        if (sourcePath == null || sourcePath.isEmpty() || !sourcePath.contains("/")) {
-            throw new IllegalArgumentException("Invalid sourcePath provided.");
-        }
-
-        if (sourcePath.endsWith("/")) {
-            sourcePath = sourcePath.substring(0, sourcePath.length() - 1);
-        }
-
-        String parentPath = sourcePath.substring(0, sourcePath.lastIndexOf('/'));
-
-        String folderName = fileOperationDto.getFolderName();
-        if (folderName == null || folderName.isEmpty()) {
-            throw new IllegalArgumentException("Folder name cannot be null or empty.");
-        }
-
-        if (folderName.endsWith("/")) {
-            folderName = folderName.substring(0, folderName.length() - 1);
-        }
-
-        String newTargetPath = parentPath + "/" + folderName + "/";
+    public void renameFolder(RenameFileDto fileOperationDto) {
+        String newTargetPath = fileOperationDto.getSourcePath().replace(fileOperationDto.getFileName(), fileOperationDto.getNewFileName());
         fileRepository.moveFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
@@ -70,9 +51,8 @@ public class FileService {
         fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
-    public void renameFile(FileOperationDto fileOperationDto) {
-        String parentPath = fileOperationDto.getSourcePath().substring(0, fileOperationDto.getSourcePath().lastIndexOf('/'));
-        String newTargetPath = parentPath + "/" + fileOperationDto.getFileName();
+    public void renameFile(RenameFileDto fileOperationDto) {
+        String newTargetPath = fileOperationDto.getSourcePath().replace(fileOperationDto.getFileName(), fileOperationDto.getNewFileName());
         fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
