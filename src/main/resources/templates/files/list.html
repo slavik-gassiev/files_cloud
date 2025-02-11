@@ -97,6 +97,7 @@
             </div>
             <div class="modal-body">
                 <form id="moveForm" method="post">
+                    <input type="hidden" id="moveBucketName" name="bucketName" th:value="${bucketName}">
                     <input type="hidden" id="moveSourcePath" name="sourcePath">
                     <input type="hidden" id="moveFileName" name="fileName">
                     <input type="hidden" id="moveIsFolder" name="isFolder">
@@ -106,6 +107,7 @@
                         <option value="" disabled selected>Choose folder</option>
                         <option th:each="folder : ${folders}" th:value="${folder.path}" th:text="${folder.name}"></option>
                     </select>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Move</button>
@@ -182,12 +184,13 @@
             const fileName = button.getAttribute('data-file-name') || '';
             const isFolder = button.getAttribute('data-is-folder') === 'true';
 
+            // Заполняем скрытые поля формы
             document.getElementById('moveSourcePath').value = filePath;
             document.getElementById('moveFileName').value = fileName;
             document.getElementById('moveIsFolder').value = isFolder;
 
             const form = document.getElementById('moveForm');
-            form.action = isFolder ? '/folders/move' : '/files/move'; // Если это папка — отправляем в FolderController
+            form.action = isFolder ? '/folders/move' : '/files/move';
         });
 
         setupModal('renameModal', (event) => {

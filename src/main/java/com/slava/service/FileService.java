@@ -1,8 +1,6 @@
 package com.slava.service;
 
-import com.slava.dto.FileFolderDto;
-import com.slava.dto.FileOperationDto;
-import com.slava.dto.RenameFileDto;
+import com.slava.dto.*;
 import com.slava.repository.CustomFileRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,19 +33,13 @@ public class FileService {
         fileRepository.moveFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
-    public void moveFolder(FileOperationDto fileOperationDto) {
-        String folderName = extractFolderName(fileOperationDto.getSourcePath());
-        String newTargetPath = normalizePath(fileOperationDto.getTargetPath()) + folderName + "/";
-
+    public void moveFolder(MoveFileDto fileOperationDto) {
+        String newTargetPath = fileOperationDto.getTargetPath() + fileOperationDto.getFileName();
         fileRepository.moveFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
-    public void moveFile(FileOperationDto fileOperationDto) {
-        String newTargetPath = fileOperationDto.getTargetPath();
-        if (!newTargetPath.endsWith("/")) {
-            newTargetPath += "/";
-        }
-        newTargetPath += extractFileName(fileOperationDto.getSourcePath());
+    public void moveFile(MoveFileDto fileOperationDto) {
+        String newTargetPath = fileOperationDto.getTargetPath() + fileOperationDto.getFileName();
         fileRepository.moveFile(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath(), newTargetPath);
     }
 
@@ -111,8 +103,16 @@ public class FileService {
                 .toList();
     }
 
-    public void uploadFile(String bucketName, String objectName, byte[] content, String contentType) {
-        fileRepository.uploadFile(bucketName, objectName, new ByteArrayInputStream(content), content.length, contentType);
+    public void uploadFile(UploadFileDto uploadFileDto) {
+        String objectName = uploadFileDto.getSourcePath() + uploadFileDto.getFileName();
+
+        fileRepository.uploadFile(
+                uploadFileDto.getBucketName(),
+                objectName,
+                new ByteArrayInputStream(uploadFileDto.getContent()),
+                uploadFileDto.getContent().length,
+                uploadFileDto.getContentType()
+        );
     }
 
     public List<FileFolderDto> listOnlyFolders(String bucketName) {
@@ -135,23 +135,5 @@ public class FileService {
         if (!fileRepository.bucketExists(bucketName)) {
             fileRepository.createBucket(bucketName);
         }
-    }
-
-    private String extractFileName(String path) {
-        return path.substring(path.lastIndexOf("/") + 1);
-    }
-
-    private String extractFolderName(String sourcePath) {
-        if (sourcePath.endsWith("/")) {
-            sourcePath = sourcePath.substring(0, sourcePath.length() - 1);
-        }
-        return sourcePath.substring(sourcePath.lastIndexOf("/") + 1);
-    }
-
-    private String normalizePath(String path) {
-        if (!path.endsWith("/")) {
-            path += "/";
-        }
-        return path.replaceAll("//+", "/"); // Убираем двойные слэши
     }
 }

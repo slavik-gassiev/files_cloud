@@ -2,6 +2,7 @@ package com.slava.controller;
 
 import com.slava.dto.FileFolderDto;
 import com.slava.dto.FileOperationDto;
+import com.slava.dto.MoveFileDto;
 import com.slava.dto.RenameFileDto;
 import com.slava.service.FileService;
 import jakarta.validation.Valid;
@@ -60,22 +61,24 @@ public class FolderController {
 
     @PostMapping("/move")
     public String moveFolder(
-            @ModelAttribute @Valid FileOperationDto fileOperationDto,
+            @ModelAttribute @Valid MoveFileDto moveFileDto,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации: " + bindingResult.getAllErrors());
-            return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+            return "redirect:/files/list?path=" + moveFileDto.getSourcePath();
         }
 
         try {
-            fileService.moveFolder(fileOperationDto);
+            moveFileDto.setBucketName(userDetails.getUsername());
+            fileService.moveFolder(moveFileDto);
             redirectAttributes.addFlashAttribute("successMessage", "Папка успешно перемещена");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при перемещении папки: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + fileOperationDto.getTargetPath();
+        return "redirect:/files/list?path=" + moveFileDto.getTargetPath();
     }
 
     @PostMapping("/rename")

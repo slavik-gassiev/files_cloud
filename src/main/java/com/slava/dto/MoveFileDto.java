@@ -19,5 +19,6 @@ public class MoveFileDto {
 
     @NotNull
     private String fileName;
+    private boolean isFolder = false;
 }
 

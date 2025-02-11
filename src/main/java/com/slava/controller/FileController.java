@@ -1,8 +1,6 @@
 package com.slava.controller;
 
-import com.slava.dto.FileFolderDto;
-import com.slava.dto.FileOperationDto;
-import com.slava.dto.RenameFileDto;
+import com.slava.dto.*;
 import com.slava.service.FileService;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,49 +65,59 @@ public class FileController {
 
     @PostMapping("/upload")
     public String uploadFile(
-            @RequestParam("file") MultipartFile file, // Используем MultipartFile для загрузки файла
-            @ModelAttribute @Valid FileOperationDto fileOperationDto,
+            @RequestParam("file") MultipartFile file,
+            @ModelAttribute UploadFileDto uploadFileDto,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Validation failed: " + bindingResult.getAllErrors());
-            return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Uploaded file is empty");
+            return "redirect:/files/list?path=" + uploadFileDto.getSourcePath();
         }
 
+        uploadFileDto.setBucketName(userDetails.getUsername());
+        uploadFileDto.setFileName(file.getOriginalFilename());
+        uploadFileDto.setContentType(file.getContentType());
         try {
-            // Проверяем, что файл не пустой
-            if (file.isEmpty()) {
-                throw new IllegalArgumentException("Uploaded file is empty");
-            }
-
-            // Передаем содержимое файла и другие данные в сервис
-            fileService.uploadFile(
-                    fileOperationDto.getBucketName(),
-                    fileOperationDto.getSourcePath() + file.getOriginalFilename(),
-                    file.getBytes(),
-                    file.getContentType()
-            );
-            redirectAttributes.addFlashAttribute("successMessage", "File uploaded successfully");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error uploading file: " + e.getMessage());
+            uploadFileDto.setContent(file.getBytes());
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error reading file content");
+            return "redirect:/files/list?path=" + uploadFileDto.getSourcePath();
         }
-        return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+
+        if (uploadFileDto.getFileName() == null || uploadFileDto.getFileName().isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "File name must not be empty");
+            return "redirect:/files/list?path=" + uploadFileDto.getSourcePath();
+        }
+
+        if (uploadFileDto.getBucketName() == null || uploadFileDto.getBucketName().isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bucket name must not be empty");
+            return "redirect:/files/list?path=" + uploadFileDto.getSourcePath();
+        }
+
+        fileService.uploadFile(uploadFileDto);
+
+        redirectAttributes.addFlashAttribute("successMessage", "File uploaded successfully");
+        return "redirect:/files/list?path=" + uploadFileDto.getSourcePath();
     }
 
     @PostMapping("/move")
     public String moveFile(
-            @ModelAttribute @Valid FileOperationDto fileOperationDto,
+            @ModelAttribute @Valid MoveFileDto moveFileDto,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка валидации: " + bindingResult.getAllErrors());
-            return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+            return "redirect:/files/list?path=" + moveFileDto.getSourcePath();
         }
 
-        fileService.moveFile(fileOperationDto);
+        moveFileDto.setBucketName(userDetails.getUsername());
+        fileService.moveFile(moveFileDto);
         redirectAttributes.addFlashAttribute("successMessage", "Файл успешно перемещён");
-        return "redirect:/files/list?path=" + fileOperationDto.getTargetPath();
+        return "redirect:/files/list?path=" + moveFileDto.getTargetPath();
     }
 
     @PostMapping("/rename")
