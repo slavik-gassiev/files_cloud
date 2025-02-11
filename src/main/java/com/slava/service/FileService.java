@@ -20,8 +20,9 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
-    public void createFolder(String bucketName, String path) {
-        fileRepository.createFolder(bucketName, path);
+    public void createFolder(CreateFolderDto createFolderDto) {
+        createFolderDto.setSourcePath(createFolderDto.getSourcePath() + createFolderDto.getFolderName());
+        fileRepository.createFolder(createFolderDto.getBucketName(), createFolderDto.getSourcePath());
     }
 
     public void deleteFolder(DeleteFileDto deleteFileDto) {

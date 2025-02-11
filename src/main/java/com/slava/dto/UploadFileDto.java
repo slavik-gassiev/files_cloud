@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 @NoArgsConstructor
 public class UploadFileDto {
-    @NotNull
     private String bucketName;
 
     @NotNull

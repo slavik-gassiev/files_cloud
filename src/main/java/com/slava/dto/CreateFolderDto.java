@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CreateFolderDto {
-    @NotNull
     private String bucketName;
 
     @NotNull

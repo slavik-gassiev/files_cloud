@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class MoveFileDto {
-    @NotNull
     private String bucketName;
 
     @NotNull

@@ -40,21 +40,23 @@ public class FolderController {
 
     @PostMapping("/create")
     public String createFolder(
-            @ModelAttribute @Valid FileOperationDto fileOperationDto,
+            @ModelAttribute @Valid CreateFolderDto createFolderDto,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal UserDetails userDetails) {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Validation failed: " + bindingResult.getAllErrors());
-            return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+            return "redirect:/files/list?path=" + createFolderDto.getSourcePath();
         }
 
         try {
-            fileService.createFolder(fileOperationDto.getBucketName(), fileOperationDto.getSourcePath() + fileOperationDto.getFolderName());
+            createFolderDto.setBucketName(userDetails.getUsername());
+            fileService.createFolder(createFolderDto);
             redirectAttributes.addFlashAttribute("successMessage", "Folder created successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating folder: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + fileOperationDto.getSourcePath();
+        return "redirect:/files/list?path=" + createFolderDto.getSourcePath();
     }
 
     @PostMapping("/move")

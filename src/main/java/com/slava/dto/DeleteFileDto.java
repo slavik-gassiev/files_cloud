@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class DeleteFileDto {
-    @NotNull
     private String bucketName;
 
     @NotNull
