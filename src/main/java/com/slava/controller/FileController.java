@@ -32,13 +32,6 @@ public class FileController {
         this.folderService = folderService;
     }
 
-    @ModelAttribute("fileOperationDto")
-    public FileOperationDto fileOperationDto(@AuthenticationPrincipal UserDetails userDetails) {
-        FileOperationDto dto = new FileOperationDto();
-        dto.setBucketName(userDetails.getUsername()); // Устанавливаем bucketName на основе имени пользователя
-        return dto;
-    }
-
     @GetMapping("/list")
     public String listFiles(@RequestParam(value = "path", required = false, defaultValue = "") String path,
                             @AuthenticationPrincipal UserDetails userDetails,
@@ -139,7 +132,7 @@ public class FileController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error renaming file: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + renameFileDto.getSourcePath();
+        return "redirect:/files/list?path=" + fileService.getParentPathForFile(renameFileDto.getSourcePath());
     }
 
     @PostMapping("/delete")
@@ -154,7 +147,7 @@ public class FileController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting file: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + deleteFileDto.getSourcePath();
+        return "redirect:/files/list?path=" + fileService.getParentPathForFile(deleteFileDto.getSourcePath());
     }
 
     @GetMapping("/download")

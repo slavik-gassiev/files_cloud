@@ -1,6 +1,7 @@
 package com.slava.controller;
 
 import com.slava.dto.*;
+import com.slava.service.FileService;
 import com.slava.service.FolderService;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,16 +19,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class FolderController {
 
     private final FolderService folderService;
+    private final FileService fileService;
 
-    public FolderController(FolderService folderService) {
+    public FolderController(FolderService folderService, FileService fileService) {
         this.folderService = folderService;
-    }
-
-    @ModelAttribute("fileOperationDto")
-    public FileOperationDto fileOperationDto(@AuthenticationPrincipal UserDetails userDetails) {
-        FileOperationDto dto = new FileOperationDto();
-        dto.setBucketName(userDetails.getUsername()); // Устанавливаем bucketName на основе имени пользователя
-        return dto;
+        this.fileService = fileService;
     }
 
     @PostMapping("/create")
@@ -91,7 +87,7 @@ public class FolderController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error renaming folder: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + renameFileDto.getSourcePath();
+        return "redirect:/files/list?path=" + folderService.getParentPathForFolder(renameFileDto.getSourcePath());
     }
 
     @PostMapping("/delete")
@@ -106,7 +102,7 @@ public class FolderController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting folder: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + deleteFileDto.getSourcePath();
+        return "redirect:/files/list?path=" + folderService.getParentPathForFolder(deleteFileDto.getSourcePath());
     }
 
     @GetMapping("/download")
@@ -117,7 +113,7 @@ public class FolderController {
 
             byte[] zipData = folderService.downloadFolderAsZip(bucketName, path);
 
-            String folderName = extractFolderName(path);
+            String folderName = folderService.extractFolderName(path);
 
             String zipFileName = folderName + ".zip";
 
@@ -131,17 +127,5 @@ public class FolderController {
         } catch (Exception e) {
             throw new RuntimeException("Error while downloading folder", e);
         }
-    }
-
-    private String extractFolderName(String path) {
-        if (path == null || path.isEmpty()) {
-            return "Root"; // Если путь пустой, используем дефолтное имя
-        }
-        // Убираем конечный слеш, если он есть
-        path = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
-
-        // Извлекаем имя папки из пути
-        int lastSlashIndex = path.lastIndexOf("/");
-        return (lastSlashIndex == -1) ? path : path.substring(lastSlashIndex + 1);
     }
 }

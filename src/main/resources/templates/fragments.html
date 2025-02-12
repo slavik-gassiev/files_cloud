@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fragments</title>
+</head>
+<body>
+
+<!-- Навбар -->
+<div th:fragment="navbar">
+    <nav aria-label="breadcrumb" class="my-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a th:href="@{/files/list(path='')}" th:text="${userName}"></a>
+            </li>
+            <li th:each="segment, iterStat : ${pathSegments}"
+                th:classappend="${iterStat.last ? 'breadcrumb-item active' : 'breadcrumb-item'}">
+                <a th:if="${!iterStat.last}"
+                   th:href="@{/files/list(path=${breadcrumbLinks[iterStat.index]})}"
+                   th:text="${segment}"></a>
+                <span th:if="${iterStat.last}" th:text="${segment}"></span>
+            </li>
+        </ol>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-center">My Files</h2>
+            <form th:action="@{/auth/logout}" method="post">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
+    </nav>
+</div>
+
+<!-- Форма создания папки и загрузки файла -->
+<div th:fragment="file-controls">
+    <div class="d-flex justify-content-between">
+        <form th:action="@{/folders/create}" method="post" class="d-flex">
+            <input type="text" class="form-control" name="folderName" placeholder="New folder name" required>
+            <input type="hidden" name="sourcePath" th:value="${currentPath}">
+            <button type="submit" class="btn btn-primary ms-2">Create Folder</button>
+        </form>
+        <form th:action="@{/files/upload}" method="post" enctype="multipart/form-data" class="d-flex">
+            <input type="file" class="form-control" name="file" required>
+            <input type="hidden" name="sourcePath" th:value="${currentPath}">
+            <button type="submit" class="btn btn-success ms-2">Upload File</button>
+        </form>
+    </div>
+    <hr>
+</div>
+
+<!-- Таблица файлов -->
+<div th:fragment="file-table">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Path</th>
+            <th>Size</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${files}">
+            <td>
+                <a th:if="${item.isFolder}" th:href="@{/files/list(path=${item.path})}" th:text="${item.name}"></a>
+                <span th:if="${!item.isFolder}" th:text="${item.name}"></span>
+            </td>
+            <td th:text="${item.path}"></td>
+            <td th:text="${item.size > 0 ? item.size + ' bytes' : 'Folder'}"></td>
+            <td>
+                <div class="dropdown">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Actions
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#moveModal"
+                               th:data-file-name="${item.name}" th:data-file-path="${item.path}" th:data-is-folder="${item.isFolder}">Move</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#renameModal"
+                               th:data-file-name="${item.name}" th:data-file-path="${item.path}" th:data-is-folder="${item.isFolder}">Rename</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                               th:data-file-name="${item.name}" th:data-file-path="${item.path}" th:data-is-folder="${item.isFolder}">Delete</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:if="${!item.isFolder}" th:href="@{/files/download(path=${item.path})}">Download</a>
+                            <a class="dropdown-item" th:if="${item.isFolder}" th:href="@{/folders/download(path=${item.path})}">Download as ZIP</a>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

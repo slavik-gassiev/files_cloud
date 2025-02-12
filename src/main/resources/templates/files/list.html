@@ -219,11 +219,11 @@
             const newNameInput = document.getElementById('renameNewFileName');
             newNameInput.value = fileName; // Показываем текущее имя в поле для редактирования
 
-            // Устанавливаем правильный `action` формы
+            // Устанавливаем правильный action формы
             const form = document.getElementById('renameForm');
             form.action = isFolder ? '/folders/rename' : '/files/rename';
 
-            // Обновляем `newFileName` при изменении пользователем
+            // Обновляем newFileName при изменении пользователем
             newNameInput.addEventListener('input', (e) => {
                 document.getElementById('renameNewFileName').value = e.target.value.trim();
             });

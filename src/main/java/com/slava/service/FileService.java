@@ -81,4 +81,9 @@ public class FileService {
             fileRepository.createBucket(bucketName);
         }
     }
+
+    public String getParentPathForFile(String fullPath) {
+        int lastSlashIndex = fullPath.lastIndexOf("/");
+        return (lastSlashIndex != -1) ? fullPath.substring(0, lastSlashIndex) : "";
+    }
 }
