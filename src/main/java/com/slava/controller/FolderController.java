@@ -1,6 +1,7 @@
 package com.slava.controller;
 
 import com.slava.dto.*;
+import com.slava.exception.FolderDownloadException;
 import com.slava.service.FileService;
 import com.slava.service.FolderService;
 import jakarta.validation.Valid;
@@ -125,7 +126,7 @@ public class FolderController {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(resource);
         } catch (Exception e) {
-            throw new RuntimeException("Error while downloading folder", e);
+            throw new FolderDownloadException("Error while downloading folder");
         }
     }
 }

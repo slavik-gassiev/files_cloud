@@ -1,7 +1,5 @@
 package com.slava.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -24,6 +22,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidFileNameException.class)
     public String handleInvalidFileName(InvalidFileNameException ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("errorMessage", "Invalid file/folder name: " + ex.getMessage());
+        return "redirect:/files/list";
+    }
+
+    @ExceptionHandler(FileDownLoadException.class)
+    public String handleInvalidFileName(FileDownLoadException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", "File operation error: " + ex.getMessage());
         return "redirect:/files/list";
     }
 
