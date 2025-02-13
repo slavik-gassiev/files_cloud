@@ -1,69 +1,69 @@
 package com.slava.exception;
 
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(FileNotFoundException.class)
-    public String handleFileNotFound(FileNotFoundException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "File/Folder not found: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleFileNotFound(FileNotFoundException ex, Model model) {
+        model.addAttribute("errorMessage", "File/Folder not found: " + ex.getMessage());
+        return "error";
     }
 
     @ExceptionHandler(FileAlreadyExistsException.class)
-    public String handleFileAlreadyExists(FileAlreadyExistsException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "File/Folder already exists: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleFileAlreadyExists(FileAlreadyExistsException ex, Model model) {
+        model.addAttribute("errorMessage", "File/Folder already exists: " + ex.getMessage());
+        return "error";
     }
 
     @ExceptionHandler(InvalidFileNameException.class)
-    public String handleInvalidFileName(InvalidFileNameException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "Invalid file/folder name: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleInvalidFileName(InvalidFileNameException ex, Model model) {
+        model.addAttribute("errorMessage", "Invalid file/folder name: " + ex.getMessage());
+        return "error";
     }
 
     @ExceptionHandler(FileDownLoadException.class)
-    public String handleInvalidFileName(FileDownLoadException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "File operation error: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleFileDownloadException(FileDownLoadException ex, Model model) {
+        model.addAttribute("errorMessage", "File download error: " + ex.getMessage());
+        return "error";
     }
 
     @ExceptionHandler(FileException.class)
-    public String handleGenericFileException(FileException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "File operation error: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleFileException(FileException ex, Model model) {
+        model.addAttribute("errorMessage", "File operation error: " + ex.getMessage());
+        return "error";
     }
 
-    @ExceptionHandler(FolderExeption.class)
-    public String handleGenericFileException(FolderExeption ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "Folder operation error: " + ex.getMessage());
-        return "redirect:/files/list";
+    @ExceptionHandler(FolderException.class)
+    public String handleFolderException(FolderException ex, Model model) {
+        model.addAttribute("errorMessage", "Folder operation error: " + ex.getMessage());
+        return "error";
     }
 
     @ExceptionHandler(FolderDownloadException.class)
-    public String handleGenericFileException(FolderDownloadException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "Folder operation error: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleFolderDownloadException(FolderDownloadException ex, Model model) {
+        model.addAttribute("errorMessage", "Folder download error: " + ex.getMessage());
+        return "error";
     }
 
     @ExceptionHandler(UserException.class)
-    public String handleGenericFileException(UserException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "User operation error: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleUserException(UserException ex, Model model) {
+        model.addAttribute("errorMessage", "User operation error: " + ex.getMessage());
+        return "error";
     }
 
     @ExceptionHandler(UserAlreadyExists.class)
-    public String handleGenericFileException(UserAlreadyExists ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "User operation error: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleUserAlreadyExists(UserAlreadyExists ex, Model model) {
+        model.addAttribute("errorMessage", "User already exists: " + ex.getMessage());
+        return "error";
     }
 
     @ExceptionHandler(Exception.class)
-    public String handleGenericException(Exception ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMessage", "An unexpected error occurred: " + ex.getMessage());
-        return "redirect:/files/list";
+    public String handleGenericException(Exception ex, Model model) {
+        model.addAttribute("errorMessage", "An unexpected error occurred: " + ex.getMessage());
+        return "error";
     }
 }

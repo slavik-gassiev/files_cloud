@@ -17,17 +17,13 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: inline-block;
-            max-width: 500px;
         }
         h1 {
             color: #d9534f;
         }
         p {
             margin: 20px 0;
-        }
-        .error-message {
-            color: #d9534f;
-            font-weight: bold;
+            font-size: 18px;
         }
         a {
             color: #007bff;
@@ -41,11 +37,7 @@
 <body>
 <div class="error-container">
     <h1>Error</h1>
-    <p>Oops! Something went wrong.</p>
-
-    <!-- Вывод ошибки -->
-    <p class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></p>
-
+    <p th:text="${errorMessage} ?: 'Oops! Something went wrong.'"></p>
     <p><a href="/">Go back to Home</a></p>
 </div>
 </body>
