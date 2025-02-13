@@ -39,12 +39,12 @@ public class FolderController {
 
         try {
             createFolderDto.setBucketName(userDetails.getUsername());
-                folderService.createFolder(createFolderDto);
+            folderService.createFolder(createFolderDto);
             redirectAttributes.addFlashAttribute("successMessage", "Folder created successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating folder: " + e.getMessage());
         }
-        return "redirect:/files/list?path=" + createFolderDto.getSourcePath();
+        return "redirect:/files/list?path=" + folderService.getParentPathForFolder(createFolderDto.getSourcePath());
     }
 
     @PostMapping("/move")
