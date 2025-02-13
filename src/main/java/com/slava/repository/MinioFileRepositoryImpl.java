@@ -1,5 +1,6 @@
 package com.slava.repository;
 
+import com.slava.exception.FileException;
 import io.minio.*;
 import io.minio.messages.Item;
 import org.springframework.stereotype.Repository;
@@ -29,7 +30,7 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
                     .contentType(contentType)
                     .build());
         } catch (Exception e) {
-            throw new RuntimeException("Error uploading file: " + objectName, e);
+            throw new FileException("Error uploading file: ");
         }
     }
 
@@ -48,7 +49,7 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(filePath).build());
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting file: " + filePath, e);
+            throw new FileException("Error deleting file: " + filePath);
         }
     }
 
@@ -61,7 +62,7 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
                     .source(CopySource.builder().bucket(bucketName).object(sourceObjectName).build())
                     .build());
         } catch (Exception e) {
-            throw new RuntimeException("Error copying file: " + sourceObjectName, e);
+            throw new FileException("Error copying file: " + sourceObjectName);
         }
     }
 
@@ -78,7 +79,7 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
             }
             return objectNames;
         } catch (Exception e) {
-            throw new RuntimeException("Error listing objects for prefix: " + prefix, e);
+            throw new FileException("Error listing objects for prefix: ");
         }
     }
 
@@ -87,7 +88,7 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
         } catch (Exception e) {
-            throw new RuntimeException("Error checking bucket existence: " + bucketName, e);
+            throw new FileException("Error checking bucket existence: " + bucketName);
         }
     }
 
@@ -96,7 +97,7 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
         } catch (Exception e) {
-            throw new RuntimeException("Error creating bucket: " + bucketName, e);
+            throw new FileException("Error creating bucket: " + bucketName);
         }
     }
 

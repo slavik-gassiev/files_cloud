@@ -25,9 +25,5 @@ public class UserDto implements Serializable {
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
-    @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Email should be valid")
-    private String email;
-
     private List<RoleDto> roles;
 }

@@ -49,6 +49,18 @@ public class GlobalExceptionHandler {
         return "redirect:/files/list";
     }
 
+    @ExceptionHandler(UserException.class)
+    public String handleGenericFileException(UserException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", "User operation error: " + ex.getMessage());
+        return "redirect:/files/list";
+    }
+
+    @ExceptionHandler(UserAlreadyExists.class)
+    public String handleGenericFileException(UserAlreadyExists ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", "User operation error: " + ex.getMessage());
+        return "redirect:/files/list";
+    }
+
     @ExceptionHandler(Exception.class)
     public String handleGenericException(Exception ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("errorMessage", "An unexpected error occurred: " + ex.getMessage());

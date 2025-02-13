@@ -5,6 +5,8 @@ import com.slava.dto.RoleDto;
 import com.slava.dto.UserDto;
 import com.slava.entity.Role;
 import com.slava.entity.User;
+import com.slava.exception.UserAlreadyExists;
+import com.slava.exception.UserException;
 import com.slava.repository.UserRepository;
 import io.minio.MinioClient;
 import org.modelmapper.ModelMapper;
@@ -41,7 +43,7 @@ public class UserService {
     public User registerUser(UserDto userDto) {
         findByUsername(userDto.getUsername()).ifPresent(u -> {
             System.out.println("User already exists");
-            throw new IllegalArgumentException("User already exists");
+            throw new UserAlreadyExists("User already exists");
         });
 
         User user = modelMapper.map(userDto, User.class);
@@ -59,13 +61,13 @@ public class UserService {
 
     public void setDefaultRole(User user) {
         Role userRole = roleService.findByName("ROLE_USER")
-                .orElseThrow(() -> new IllegalArgumentException("Default role not found"));
+                .orElseThrow(() -> new UserException("Default role not found"));
         user.getRoles().add(userRole);
     }
 
     public UserDto getUserWithRoles(String username) {
         User user = userRepository.findByUsernameWithRoles(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UserException("User not found"));
         return modelMapper.map(user, UserDto.class);
     }
 
