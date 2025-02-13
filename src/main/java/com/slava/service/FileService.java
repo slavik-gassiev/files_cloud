@@ -1,11 +1,14 @@
 package com.slava.service;
 
 import com.slava.dto.*;
+import com.slava.exception.FileException;
+import com.slava.exception.FileNotFoundException;
 import com.slava.repository.CustomFileRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,10 +40,10 @@ public class FileService {
                     try {
                         return inputStream.readAllBytes();
                     } catch (IOException e) {
-                        throw new RuntimeException("Error reading file content", e);
+                        throw new FileException("Error reading file content");
                     }
                 })
-                .orElseThrow(() -> new IllegalArgumentException("File not found"));
+                .orElseThrow(() -> new FileNotFoundException("File not found"));
     }
 
     public List<FileFolderDto> listFolderContents(String bucketName, String path) {
@@ -86,4 +89,22 @@ public class FileService {
         int lastSlashIndex = fullPath.lastIndexOf("/");
         return (lastSlashIndex != -1) ? fullPath.substring(0, lastSlashIndex) : "";
     }
+
+    public List<String> getBreadcrumbLinks(String path) {
+        List<String> breadcrumbLinks = new ArrayList<>();
+        StringBuilder fullPath = new StringBuilder();
+        for (String segment : getPathSegments(path)) {
+            if (!segment.isEmpty()) {
+                fullPath.append(segment).append("/");
+                breadcrumbLinks.add(fullPath.toString());
+            }
+        }
+        return breadcrumbLinks;
+    }
+
+    public String[] getPathSegments(String path) {
+        String[] pathSegments = path.isEmpty() ? new String[0] : path.split("/");
+        return pathSegments;
+    }
+
 }

@@ -38,23 +38,13 @@ public class FileController {
                             Model model) {
 
         String userName = userDetails.getUsername();
-
-        String[] pathSegments = path.isEmpty() ? new String[0] : path.split("/");
-        List<String> breadcrumbLinks = new ArrayList<>();
-        StringBuilder fullPath = new StringBuilder();
-        for (String segment : pathSegments) {
-            if (!segment.isEmpty()) {
-                fullPath.append(segment).append("/");
-                breadcrumbLinks.add(fullPath.toString());
-            }
-        }
         List<FileFolderDto> folders = folderService.listOnlyFolders(userName);
 
         model.addAttribute("userName", userName);
         model.addAttribute("files", fileService.listFolderContents(userName, path));
         model.addAttribute("currentPath", path);
-        model.addAttribute("pathSegments", pathSegments);
-        model.addAttribute("breadcrumbLinks", breadcrumbLinks);
+        model.addAttribute("pathSegments", fileService.getPathSegments(path));
+        model.addAttribute("breadcrumbLinks", fileService.getBreadcrumbLinks(path));
         model.addAttribute("folders", folders);
         return "files/list";
     }

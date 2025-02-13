@@ -1,6 +1,7 @@
 package com.slava.service;
 
 import com.slava.dto.*;
+import com.slava.exception.FolderDownloadException;
 import com.slava.repository.CustomFileRepository;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +55,7 @@ public class FolderService {
 
             return baos.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException("Error while creating ZIP archive", e);
+            throw new FolderDownloadException("Error while creating ZIP archive");
         }
     }
 
