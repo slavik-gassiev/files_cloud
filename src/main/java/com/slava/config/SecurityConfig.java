@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .defaultSuccessUrl("/files/list", true)
+                        .failureUrl("/auth/login?error")
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")

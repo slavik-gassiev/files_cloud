@@ -44,15 +44,15 @@ public class AuthController {
             RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
-            return "auth/register"; // Если ошибки валидации — вернуться на страницу регистрации
+            return "auth/register";
         }
 
         try {
-            userService.registerUser(userDto); // Регистрация пользователя через DTO
+            userService.registerUser(userDto);
             redirectAttributes.addFlashAttribute("successMessage", "Registration successful!");
-            return "files/list"; // Перенаправление на страницу входа
+            return "files/list";
         } catch (IllegalArgumentException e) {
-            bindingResult.rejectValue("username", null, e.getMessage()); // Обработка ошибки уникальности имени пользователя
+            bindingResult.rejectValue("username", null, e.getMessage());
             return "auth/register";
         }
     }

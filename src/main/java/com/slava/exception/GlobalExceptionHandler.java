@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExists.class)
     public String handleUserAlreadyExists(UserAlreadyExists ex, Model model) {
-        model.addAttribute("errorMessage", "User already exists: " + ex.getMessage());
+        model.addAttribute("errorMessage", "User operation error: " + ex.getMessage());
         return "error";
     }
 

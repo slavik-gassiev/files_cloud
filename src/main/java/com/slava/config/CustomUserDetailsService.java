@@ -1,6 +1,5 @@
 package com.slava.config;
 
-import com.slava.config.CustomUserDetails;
 import com.slava.dto.UserDto;
 import com.slava.repository.UserRepository;
 import com.slava.service.UserService;
@@ -21,6 +20,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDto userDto = userService.getUserWithRoles(username);
+
+        if (userDto == null) {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
+
         return new CustomUserDetails(userDto);
     }
 }
