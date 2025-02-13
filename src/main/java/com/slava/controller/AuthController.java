@@ -4,6 +4,7 @@ import com.slava.dto.UserDto;
 import com.slava.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,10 +28,15 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(Model model) {
+        model.addAttribute("user", new UserDto());
         return "auth/login";
     }
 
+    @GetMapping("login/error")
+    public String errorPage() {
+        return "error";
+    }
 
     @GetMapping("/register")
     public String registerPage() {

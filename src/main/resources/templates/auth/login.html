@@ -126,6 +126,7 @@
                     minlength="6"
                     title="Password must be at least 6 characters long.">
         </div>
+        <p class="error-message" th:if="${param.error}">Invalid username or password</p>
         <button type="submit" class="btn">Login</button>
     </form>
     <div class="register-link">

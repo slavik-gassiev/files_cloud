@@ -1,8 +1,8 @@
-package com.slava.config;
+package com.slava.service;
 
+import com.slava.config.CustomUserDetails;
 import com.slava.dto.UserDto;
 import com.slava.repository.UserRepository;
-import com.slava.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDto userDto = userService.getUserWithRoles(username);
+        UserDto userDto = userService.getUserWithName(username);
 
         if (userDto == null) {
             throw new UsernameNotFoundException("User not found: " + username);

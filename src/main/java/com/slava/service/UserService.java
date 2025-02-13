@@ -10,7 +10,6 @@ import com.slava.exception.UserException;
 import com.slava.repository.UserRepository;
 import io.minio.MinioClient;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,7 +64,7 @@ public class UserService {
         user.getRoles().add(userRole);
     }
 
-    public UserDto getUserWithRoles(String username) {
+    public UserDto getUserWithName(String username) {
         User user = userRepository.findByUsernameWithRoles(username)
                 .orElseThrow(() -> new UserException("User not found"));
         return modelMapper.map(user, UserDto.class);
