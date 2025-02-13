@@ -79,17 +79,15 @@ public class FolderService {
             fullPath = fullPath.substring(0, fullPath.length() - 1);
         }
         int lastSlashIndex = fullPath.lastIndexOf("/");
-        return (lastSlashIndex != -1) ? fullPath.substring(0, lastSlashIndex) : "";
+        return (lastSlashIndex != -1) ? fullPath.substring(0, lastSlashIndex) + "/" : "";
     }
 
     public String extractFolderName(String path) {
         if (path == null || path.isEmpty()) {
-            return "Root"; // Если путь пустой, используем дефолтное имя
+            return "Root";
         }
-        // Убираем конечный слеш, если он есть
         path = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
 
-        // Извлекаем имя папки из пути
         int lastSlashIndex = path.lastIndexOf("/");
         return (lastSlashIndex == -1) ? path : path.substring(lastSlashIndex + 1);
     }
