@@ -103,8 +103,12 @@ public class MinioFileRepositoryImpl implements CustomFileRepository {
 
     @Override
     public void createFolder(String bucketName, String folderPath) {
-        uploadFile(bucketName, folderPath.endsWith("/") ? folderPath : folderPath + "/",
-                new ByteArrayInputStream(new byte[0]), 0, "application/x-directory");
+        try {
+            uploadFile(bucketName, folderPath.endsWith("/") ? folderPath : folderPath + "/",
+                    new ByteArrayInputStream(new byte[0]), 0, "application/x-directory");
+        } catch (Exception e) {
+            throw new FileException("Error creating folder: " + folderPath);
+        }
     }
 
     @Override

@@ -54,7 +54,7 @@ public class FolderService {
             zos.finish();
 
             return baos.toByteArray();
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException runtimeException) {
             throw new FolderDownloadException("Error while creating ZIP archive");
         }
     }
