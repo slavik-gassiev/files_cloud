@@ -22,6 +22,9 @@ public class FolderService {
     }
 
     public void createFolder(CreateFolderDto createFolderDto) {
+        if(!createFolderDto.getSourcePath().endsWith("/") && !createFolderDto.getSourcePath().isBlank()) {
+            createFolderDto.setSourcePath(createFolderDto.getSourcePath() + "/");
+        }
         createFolderDto.setSourcePath(createFolderDto.getSourcePath() + createFolderDto.getFolderName());
         fileRepository.createFolder(createFolderDto.getBucketName(), createFolderDto.getSourcePath());
     }

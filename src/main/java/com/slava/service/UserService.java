@@ -70,7 +70,7 @@ public class UserService {
         return modelMapper.map(user, UserDto.class);
     }
 
-    private UserDto mapToUserDto(User user) {
+    public UserDto mapToUserDto(User user) {
         UserDto userDto = modelMapper.map(user, UserDto.class);
         userDto.setRoles(user.getRoles().stream()
                 .map(role -> modelMapper.map(role, RoleDto.class))

@@ -1,16 +1,30 @@
 package com.slava.controller;
 
+import com.slava.config.CustomUserDetails;
 import com.slava.dto.UserDto;
+import com.slava.entity.User;
 import com.slava.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
 @Controller
 @RequestMapping("/auth")
@@ -39,7 +53,8 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerPage() {
+    public String registerPage(Model model) {
+        model.addAttribute("user", new UserDto());
         return "auth/register";
     }
 
@@ -47,16 +62,25 @@ public class AuthController {
     public String registerUser(
             @Valid @ModelAttribute("user") UserDto userDto,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             return "auth/register";
         }
 
         try {
-            userService.registerUser(userDto);
+            User registeredUser = userService.registerUser(userDto);
+
+            CustomUserDetails userDetails = new CustomUserDetails(userService.mapToUserDto(registeredUser));
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            HttpSession session = request.getSession();
+            session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
             redirectAttributes.addFlashAttribute("successMessage", "Registration successful!");
-            return "files/list";
+            return "redirect:/files/list";
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("username", null, e.getMessage());
             return "auth/register";
