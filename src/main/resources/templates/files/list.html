@@ -50,7 +50,7 @@
         <tr>
             <th>Name</th>
             <th>Path</th>
-            <th>Size</th>
+            <th>Type</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -61,7 +61,7 @@
                 <span th:if="${!item.isFolder}" th:text="${item.name}"></span>
             </td>
             <td th:text="${item.path}"></td>
-            <td th:text="${item.size > 0 ? item.size + ' bytes' : 'Folder'}"></td>
+            <td th:text="${item.isFolder ? 'Folder' : 'File'}"></td>
             <td>
                 <div class="dropdown">
                     <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton"
