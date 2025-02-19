@@ -57,7 +57,6 @@ public class FolderService {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              ZipOutputStream zos = new ZipOutputStream(baos)) {
             for (String filePath : files) {
-                log.debug("Добавление файла '{}' в ZIP", filePath);
                 byte[] fileData = fileService.downloadFile(bucketName, filePath);
                 ZipEntry entry = new ZipEntry(filePath.substring(folderPath.length()));
                 zos.putNextEntry(entry);
@@ -65,7 +64,6 @@ public class FolderService {
                 zos.closeEntry();
             }
             zos.finish();
-            log.info("ZIP-архив для папки '{}' успешно создан ({} байт)", folderPath, baos.size());
             return baos.toByteArray();
         } catch (IOException | RuntimeException ex) {
             log.error("Ошибка при создании ZIP-архива для папки '{}': {}", folderPath, ex.getMessage(), ex);
@@ -87,7 +85,6 @@ public class FolderService {
                     return dto;
                 })
                 .toList();
-        log.debug("Найдено {} папок в бакете '{}'", folders.size(), bucketName);
         return folders;
     }
 
@@ -105,13 +102,11 @@ public class FolderService {
     public String extractFolderName(String path) {
         log.debug("Извлечение имени папки из пути '{}'", path);
         if (path == null || path.isEmpty()) {
-            log.debug("Путь пустой или null, возвращаем 'Root'");
             return "Root";
         }
         path = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
         int lastSlashIndex = path.lastIndexOf("/");
         String folderName = (lastSlashIndex == -1) ? path : path.substring(lastSlashIndex + 1);
-        log.debug("Извлечённое имя папки: '{}'", folderName);
         return folderName;
     }
 }

@@ -100,10 +100,8 @@ public class FileService {
     public void ensureBucketExists(String bucketName) {
         log.info("Проверка существования бакета '{}'", bucketName);
         if (!fileRepository.bucketExists(bucketName)) {
-            log.info("Бакет '{}' не существует. Создаём бакет.", bucketName);
             fileRepository.createBucket(bucketName);
         } else {
-            log.debug("Бакет '{}' уже существует", bucketName);
         }
     }
 
@@ -111,7 +109,6 @@ public class FileService {
         log.debug("Определение родительского пути для '{}'", fullPath);
         int lastSlashIndex = fullPath.lastIndexOf("/");
         String parentPath = (lastSlashIndex != -1) ? fullPath.substring(0, lastSlashIndex) : "";
-        log.debug("Родительский путь: '{}'", parentPath);
         return parentPath;
     }
 
@@ -125,14 +122,12 @@ public class FileService {
                 breadcrumbLinks.add(fullPath.toString());
             }
         }
-        log.debug("Ссылки для навигации: {}", breadcrumbLinks);
         return breadcrumbLinks;
     }
 
     public String[] getPathSegments(String path) {
         log.debug("Разбиение пути '{}' на сегменты", path);
         String[] pathSegments = path.isEmpty() ? new String[0] : path.split("/");
-        log.debug("Сегменты: {}", (Object) pathSegments);
         return pathSegments;
     }
 }
