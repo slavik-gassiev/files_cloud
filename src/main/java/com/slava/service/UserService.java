@@ -9,6 +9,7 @@ import com.slava.exception.UserAlreadyExists;
 import com.slava.exception.UserException;
 import com.slava.repository.UserRepository;
 import io.minio.MinioClient;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class UserService {
 
     private final UserRepository userRepository;
@@ -41,7 +43,7 @@ public class UserService {
 
     public User registerUser(UserDto userDto) {
         findByUsername(userDto.getUsername()).ifPresent(u -> {
-            System.out.println("User already exists");
+            log.error("User already exists", userDto.getUsername());
             throw new UserAlreadyExists("User already exists");
         });
 

@@ -1,0 +1,6 @@
+<configuration>
+    <logger name="com.slava" level="INFO" />
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>
