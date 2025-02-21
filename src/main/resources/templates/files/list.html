@@ -33,7 +33,9 @@
 
     <div class="d-flex justify-content-between">
         <form th:action="@{/folders/create}" method="post" class="d-flex">
-            <input type="text" class="form-control" name="folderName" placeholder="New folder name" required>
+            <input type="text" class="form-control" name="folderName" placeholder="New folder name" required
+                   pattern="^[a-z0-9]+$"
+                   title="Folder's name must be 3-50 characters long and contain only lowercase Latin letters and numbers (no spaces or special characters).">
             <input type="hidden" name="sourcePath" th:value="${currentPath}">
             <button type="submit" class="btn btn-primary ms-2">Create Folder</button>
         </form>
